@@ -6,6 +6,7 @@ pub mod parser;
 pub mod printer;
 pub mod solver;
 pub mod symbol_checker;
+pub mod type_checker;
 
 pub struct Ast {
     statements: Vec<ASTStatement>,

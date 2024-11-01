@@ -71,6 +71,34 @@ impl DiagnosticsColletion {
         self.report_error(format!("Not found in this scope"), span);
     }
 
+    pub fn report_undefined_identifier(&mut self, span: TextSpan) {
+        self.report_error(
+            format!("No identifier named '{}' in scope", span.literal),
+            span,
+        );
+    }
+
+    pub fn report_not_a_callable(&mut self, span: TextSpan) {
+        self.report_error(
+            format!("Identifier '{}' is not callable", span.literal),
+            span,
+        );
+    }
+    pub fn report_type_mismatch(
+        &mut self,
+        span: TextSpan,
+        found_type: String,
+        expected_type: String,
+    ) {
+        self.report_error(
+            format!(
+                "Type mismatch. Expected <{}>, but found <{}>",
+                expected_type, found_type
+            ),
+            span,
+        );
+    }
+
     pub fn report_number_of_function_arguments_mismatch(
         &mut self,
         span: TextSpan,
