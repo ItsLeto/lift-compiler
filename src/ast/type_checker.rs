@@ -169,9 +169,15 @@ impl TypeChecker {
     }
 }
 
-impl ASTVisitor for TypeChecker {
+impl ASTVisitor<()> for TypeChecker {
     fn visit_return_statement(&mut self, statement: &super::ASTReturnStatement) {
         todo!()
+    }
+
+    fn visit_compound_statement(&mut self, statement: &super::ASTCompoundStatement) -> () {
+        for statement in statement.statements.iter() {
+            self.visit_statement(statement);
+        }
     }
 
     fn visit_let_statement(&mut self, statement: &super::ASTLetStatement) {
@@ -199,6 +205,8 @@ impl ASTVisitor for TypeChecker {
     fn visit_while_loop_statement(&mut self, statement: &super::ASTWhileStatement) {
         todo!()
     }
+
+    fn visit_funtion_statement(&mut self, function: &super::ASTFunctionStatement) {}
 
     fn visit_assignment_expression(&mut self, expr: &super::ASTAssignmentExpression) {
         todo!()
@@ -323,6 +331,10 @@ impl ASTVisitor for TypeChecker {
     }
 
     fn visit_binary_operator(&mut self, op: &super::ASTBinaryOperator) {
+        todo!()
+    }
+
+    fn visit_error(&mut self, span: &super::lexer::TextSpan) -> () {
         todo!()
     }
 

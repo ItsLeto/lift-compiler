@@ -49,7 +49,7 @@ impl SymbolChecker {
     }
 }
 
-impl ASTVisitor for SymbolChecker {
+impl ASTVisitor<()> for SymbolChecker {
     fn visit_return_statement(&mut self, statement: &super::ASTReturnStatement) {
         self.visit_expression(&statement.expr);
     }
@@ -159,6 +159,7 @@ impl ASTVisitor for SymbolChecker {
     }
 
     fn visit_binary_operator(&mut self, op: &super::ASTBinaryOperator) {}
+    fn visit_error(&mut self, span: &super::lexer::TextSpan) -> () {}
     fn visit_integer(&mut self, integer: &i64) {}
     fn visit_float(&mut self, float: &f64) {}
 }

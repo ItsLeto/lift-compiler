@@ -23,7 +23,7 @@ impl Ast {
         self.statements.push(statement);
     }
 
-    pub fn visit(&self, printer: &mut dyn ASTVisitor) {
+    pub fn visit<T>(&self, printer: &mut dyn ASTVisitor<T>) {
         for statement in &self.statements {
             printer.visit_statement(statement);
         }
@@ -36,8 +36,8 @@ impl Ast {
     }
 }
 
-pub trait ASTVisitor {
-    fn do_visit_statement(&mut self, statement: &ASTStatement) {
+pub trait ASTVisitor<T> {
+    fn do_visit_statement(&mut self, statement: &ASTStatement) -> T {
         match &statement.kind {
             ASTStatementKind::Expr(expr) => self.visit_expression(expr),
             ASTStatementKind::Return(statement) => self.visit_return_statement(statement),
@@ -51,7 +51,7 @@ pub trait ASTVisitor {
         }
     }
 
-    fn do_visit_expression(&mut self, expr: &ASTExpression) {
+    fn do_visit_expression(&mut self, expr: &ASTExpression) -> T {
         match &expr.kind {
             ASTExpressionKind::IntegerLiteral(i) => self.visit_integer(i),
             ASTExpressionKind::FloatingLiteral(f) => self.visit_float(f),
@@ -66,46 +66,50 @@ pub trait ASTVisitor {
         }
     }
 
-    fn visit_statement(&mut self, statement: &ASTStatement) {
-        self.do_visit_statement(statement);
+    fn visit_statement(&mut self, statement: &ASTStatement) -> T {
+        return self.do_visit_statement(statement);
     }
-    fn visit_compound_statement(&mut self, statement: &ASTCompoundStatement) {
-        for statement in statement.statements.iter() {
-            self.visit_statement(statement);
-        }
+    fn visit_compound_statement(&mut self, statement: &ASTCompoundStatement) -> T;
+    // {
+    //     for statement in statement.statements.iter() {
+    //         self.visit_statement(statement);
+    //     }
+    //     None
+    // }
+
+    fn visit_return_statement(&mut self, statement: &ASTReturnStatement) -> T;
+
+    fn visit_let_statement(&mut self, statement: &ASTLetStatement) -> T;
+    fn visit_var_statement(&mut self, statement: &ASTVarStatement) -> T;
+
+    fn visit_if_statement(&mut self, statement: &ASTIfStatement) -> T;
+    fn visit_for_loop_statement(&mut self, statement: &ASTForStatement) -> T;
+    fn visit_while_loop_statement(&mut self, statement: &ASTWhileStatement) -> T;
+
+    fn visit_funtion_statement(&mut self, function: &ASTFunctionStatement) -> T;
+    // {
+    //     if let ASTStatementKind::Compound(statement) = &function.body.kind {
+    //         self.visit_compound_statement(statement);
+    //     }
+    //     None
+    // }
+
+    fn visit_expression(&mut self, expr: &ASTExpression) -> T {
+        return self.do_visit_expression(expr);
     }
 
-    fn visit_return_statement(&mut self, statement: &ASTReturnStatement);
+    fn visit_assignment_expression(&mut self, expr: &ASTAssignmentExpression) -> T;
+    fn visit_function_call_expression(&mut self, expr: &ASTFunctionCallExpression) -> T;
+    fn visit_variable_expression(&mut self, expr: &ASTVariableExpression) -> T;
 
-    fn visit_let_statement(&mut self, statement: &ASTLetStatement);
-    fn visit_var_statement(&mut self, statement: &ASTVarStatement);
+    fn visit_unary_expression(&mut self, expr: &ASTUnaryExpression) -> T;
+    fn visit_binary_expression(&mut self, expr: &ASTBinaryExpression) -> T;
+    fn visit_parenthesised_expression(&mut self, expr: &ASTParenthesizedExpression) -> T;
+    fn visit_binary_operator(&mut self, op: &ASTBinaryOperator) -> T;
 
-    fn visit_if_statement(&mut self, statement: &ASTIfStatement);
-    fn visit_for_loop_statement(&mut self, statement: &ASTForStatement);
-    fn visit_while_loop_statement(&mut self, statement: &ASTWhileStatement);
-
-    fn visit_funtion_statement(&mut self, function: &ASTFunctionStatement) {
-        if let ASTStatementKind::Compound(statement) = &function.body.kind {
-            self.visit_compound_statement(statement);
-        }
-    }
-
-    fn visit_expression(&mut self, expr: &ASTExpression) {
-        self.do_visit_expression(expr);
-    }
-
-    fn visit_assignment_expression(&mut self, expr: &ASTAssignmentExpression);
-    fn visit_function_call_expression(&mut self, expr: &ASTFunctionCallExpression);
-    fn visit_variable_expression(&mut self, expr: &ASTVariableExpression);
-
-    fn visit_unary_expression(&mut self, expr: &ASTUnaryExpression);
-    fn visit_binary_expression(&mut self, expr: &ASTBinaryExpression);
-    fn visit_parenthesised_expression(&mut self, expr: &ASTParenthesizedExpression);
-    fn visit_binary_operator(&mut self, op: &ASTBinaryOperator);
-
-    fn visit_error(&mut self, span: &TextSpan) {}
-    fn visit_integer(&mut self, integer: &i64);
-    fn visit_float(&mut self, float: &f64);
+    fn visit_error(&mut self, span: &TextSpan) -> T;
+    fn visit_integer(&mut self, integer: &i64) -> T;
+    fn visit_float(&mut self, float: &f64) -> T;
 }
 
 #[derive(Clone)]

@@ -48,7 +48,7 @@ impl ASTTreePrinter {
     }
 }
 
-impl ASTVisitor for ASTTreePrinter {
+impl ASTVisitor<()> for ASTTreePrinter {
     fn visit_statement(&mut self, statement: &super::ASTStatement) {
         self.print(
             &format!("{}  Statement:", Self::STATEMENT_ICON),
@@ -57,6 +57,12 @@ impl ASTVisitor for ASTTreePrinter {
         self.increase_indentation();
         ASTVisitor::do_visit_statement(self, statement);
         self.decrease_indentation();
+    }
+
+    fn visit_compound_statement(&mut self, statement: &super::ASTCompoundStatement) -> () {
+        for statement in statement.statements.iter() {
+            self.visit_statement(statement);
+        }
     }
 
     fn visit_return_statement(&mut self, statement: &super::ASTReturnStatement) {
@@ -357,7 +363,7 @@ impl ASTHiglightPrinter {
     }
 }
 
-impl ASTVisitor for ASTHiglightPrinter {
+impl ASTVisitor<()> for ASTHiglightPrinter {
     fn visit_statement(&mut self, statement: &super::ASTStatement) {
         self.do_visit_statement(statement);
     }
@@ -543,6 +549,7 @@ impl ASTVisitor for ASTHiglightPrinter {
         ));
     }
 
+    fn visit_error(&mut self, span: &super::lexer::TextSpan) -> () {}
     fn visit_integer(&mut self, integer: &i64) {
         self.print(&format!("{}{}", Fg(Self::INTEGER_COLOR), integer));
     }

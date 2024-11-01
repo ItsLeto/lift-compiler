@@ -1,13 +1,26 @@
-/* find the maximum of to numbers and add 1 */
+/* find the maximum of to numbers */
 func max(arg1 : i32, arg2 : u8) -> i32 {
   let ret : i32 = 0;
-  if (arg1 > arg2) {
-    ret = arg1;
-  } else {
-    ret = arg2;
+
+  while arg1 > 0 {
+    arg2 += 1;
+    arg1 -= 1;
   }
-  ret += 1;
+  return arg2;
+
+  for i in 0..10 {
+    if i > 5 {
+      return i;
+    }
+  }
   return ret;
+
+  if arg1 > arg2 {
+    arg1 += 5;
+    return arg1 + 2 * 26;
+  } else {
+    return arg2;
+  }
 }
 
 return max(7, 5);
